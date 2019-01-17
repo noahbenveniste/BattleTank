@@ -2,12 +2,15 @@
 
 #include "Tank.h"
 
-
 // Sets default values
 ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Adds the aiming component to the Tank upon construction; visible in blueprint but it can't be removed from
+	// the blueprint, which is what we want
+	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
 
 }
 
@@ -32,3 +35,12 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+UTankAimingComponent * ATank::GetTankAimingComponent()
+{
+	return TankAimingComponent;
+}
+
+void ATank::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+{
+	GetTankAimingComponent()->SetBarrelReference(BarrelToSet);
+}

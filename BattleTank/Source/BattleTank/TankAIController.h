@@ -18,8 +18,13 @@ class BATTLETANK_API ATankAIController : public AAIController
 private:
 	// Get the tank that the AI is currently possessing
 	ATank* GetControlledTank() const;
+	
 	// Override the BeginPlay function to do specific things when the game starts
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	void AimTowardsPlayer();
 	// Get the tank that the player controller is possessing; used for aiming and things like that
 	ATank* GetPlayerTank() const;
 };

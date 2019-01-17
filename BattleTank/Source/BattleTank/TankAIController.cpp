@@ -35,6 +35,30 @@ void ATankAIController::BeginPlay()
 	
 }
 
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime); // Call superclass's Tick function first
+	if (GetPlayerTank())
+	{
+		// TODO: Move towards player
+
+		// Aim towards player
+		AimTowardsPlayer();
+
+		// Fire if ready
+	}
+}
+
+void ATankAIController::AimTowardsPlayer()
+{
+	if (!GetControlledTank()) // If we aren't possessing a tank, just return
+	{
+		return;
+	}
+
+	GetControlledTank()->GetTankAimingComponent()->AimAt(GetPlayerTank()->GetTargetLocation());
+}
+
 ATank* ATankAIController::GetPlayerTank() const
 {
 	// Get the world, then get the first player controller, cast it to an ATankPlayerController
