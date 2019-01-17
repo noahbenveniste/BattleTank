@@ -45,7 +45,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	if (GetSightRayHitLocation(HitLocation)) // If linetrace hits the landscape
 	{
 		// Tell controlled tank to aim at this point
-		GetControlledTank()->GetTankAimingComponent()->AimAt(HitLocation);
+		GetControlledTank()->AimAt(HitLocation);
 	}
 
 }

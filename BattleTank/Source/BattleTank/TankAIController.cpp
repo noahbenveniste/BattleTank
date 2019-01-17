@@ -56,7 +56,7 @@ void ATankAIController::AimTowardsPlayer()
 		return;
 	}
 
-	GetControlledTank()->GetTankAimingComponent()->AimAt(GetPlayerTank()->GetTargetLocation());
+	GetControlledTank()->AimAt(GetPlayerTank()->GetTargetLocation());
 }
 
 ATank* ATankAIController::GetPlayerTank() const
