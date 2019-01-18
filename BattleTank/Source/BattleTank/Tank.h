@@ -7,6 +7,8 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
+class UTankBarrel; // Forward declaration
+
 UCLASS()
 class BATTLETANK_API ATank : public APawn
 {
@@ -28,7 +30,7 @@ public:
 	 * chains are bad practice but in this case it helps promote encapsulation.
 	 */
 	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetBarrelReference(UStaticMeshComponent *BarrelToSet);
+	void SetBarrelReference(UTankBarrel *BarrelToSet);
 
 	void AimAt(FVector HitLocation);
 

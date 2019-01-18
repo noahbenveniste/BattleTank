@@ -40,7 +40,7 @@ UTankAimingComponent * ATank::GetTankAimingComponent()
 	return TankAimingComponent;
 }
 
-void ATank::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+void ATank::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	GetTankAimingComponent()->SetBarrelReference(BarrelToSet);
 }
