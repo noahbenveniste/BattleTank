@@ -6,10 +6,15 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
-class UTankAimingComponent; // Forward declaration
-class UTankBarrel; // Forward declaration
-class UTankTurret; // Forward declaration
-
+// Forward declarations of class types that we need to reference in this header.
+// Never #include anything in a header file unless you are inheriting from it.
+// This prevents dependencies chains and decouples our architecture. If we need
+// to use any of these classes in the implementation, we'll #include them in the
+// actuall cpp file.
+class UTankAimingComponent;
+class UTankBarrel;
+class UTankTurret;
+class AProjectile;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -59,5 +64,14 @@ private:
 	// Initiailize gun projectile speed; can be edited in blueprint
 	UPROPERTY(EditAnywhere, Category = Firing)
 	float LaunchSpeed = 100000; // TODO: find reasonable init value
+
+	// Gives us the ability to set a projectile type for each tank instance.
+	// We do this instead of UClass* so that a designer can only choose a
+	// class of type AProjectile that we've designed.
+	UPROPERTY(EditAnywhere, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	// Local barrel reference for spawning projectiles
+	UTankBarrel* Barrel = nullptr;
 	
 };
