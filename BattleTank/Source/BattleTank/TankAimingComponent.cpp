@@ -59,8 +59,8 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	{
 		auto AimDirection = LaunchVelocity.GetSafeNormal(); // Converts the velocity vector into a unit vector so we can set the barrel's orientation
 		// UE_LOG(LogTemp, Warning, TEXT("%s is aiming in direction %s"), *OurTankName, *AimDirection.ToString());
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("Projectile velocity suggestion found at time %f"), Time);
+		// auto Time = GetWorld()->GetTimeSeconds();
+		// UE_LOG(LogTemp, Warning, TEXT("Projectile velocity suggestion found at time %f"), Time);
 		MoveBarrelTowards(AimDirection);
 		RotateTurretTowards(AimDirection);
 	}
