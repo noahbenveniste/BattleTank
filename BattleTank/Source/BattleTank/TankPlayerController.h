@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/World.h"
-#include "Tank.h"
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h" // Must be the last include
+
+class ATank; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
 
 /**
  * 

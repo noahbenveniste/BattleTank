@@ -5,6 +5,7 @@
 						// Including this in the header could create dependency chains. In general, you only want to #include
 						// in a header if you're inheriting from something. We used a forward declaration in the header file
 						// so we could talk about UTankBarrel in some of the method declarations.
+#include "TankTurret.h" // Same as the above for TankBarrel
 
 
 // Sets default values for this component's properties
@@ -58,7 +59,15 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	{
 		auto AimDirection = LaunchVelocity.GetSafeNormal(); // Converts the velocity vector into a unit vector so we can set the barrel's orientation
 		// UE_LOG(LogTemp, Warning, TEXT("%s is aiming in direction %s"), *OurTankName, *AimDirection.ToString());
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("Projectile velocity suggestion found at time %f"), Time);
 		MoveBarrelTowards(AimDirection);
+		RotateTurretTowards(AimDirection);
+	}
+	else
+	{
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("No suggestion for projectile velocity found at time %f"), Time);
 	}
 
 }
@@ -68,13 +77,27 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 	this->Barrel = BarrelToSet;
 }
 
+void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
+{
+	this->Turret = TurretToSet;
+}
+
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
 	// Determine difference between current barrel rotation and AimDirection
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation(); // Gets the roll, pitch and yaw of the barrel at this moment
-	auto AimAsRotator = AimDirection.Rotation();
+	auto AimAsRotator = AimDirection.Rotation(); // Convert the aim direction vector into a rotator
 	auto DeltaRotator = AimAsRotator - BarrelRotator; // This is the aim as a rotation relative to the current orientation of the tank's barrel
 
-	Barrel->Elevate(5); // TODO: Remove magic number
+	Barrel->Elevate(DeltaRotator.Pitch);
+}
+
+void UTankAimingComponent::RotateTurretTowards(FVector AimDirection)
+{
+	auto TurretRotator = Turret->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - TurretRotator;
+
+	Turret->Rotate(DeltaRotator.Yaw);
 }
 

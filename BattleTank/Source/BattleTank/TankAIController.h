@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tank.h"
 #include "AIController.h"
 #include "TankAIController.generated.h"
+
+class ATank; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
 
 /**
  * 

@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Tank.h"
+#include "TankAimingComponent.h"
 
 // Sets default values
 ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Adds the aiming component to the Tank upon construction; visible in blueprint but it can't be removed from
 	// the blueprint, which is what we want
@@ -18,13 +19,6 @@ ATank::ATank()
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ATank::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
 }
 
@@ -43,6 +37,11 @@ UTankAimingComponent * ATank::GetTankAimingComponent()
 void ATank::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	GetTankAimingComponent()->SetBarrelReference(BarrelToSet);
+}
+
+void ATank::SetTurretReference(UTankTurret * TurretToSet)
+{
+	GetTankAimingComponent()->SetTurretReference(TurretToSet);
 }
 
 void ATank::AimAt(FVector HitLocation)

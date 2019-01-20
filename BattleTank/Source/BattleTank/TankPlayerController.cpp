@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankPlayerController.h"
+#include "Tank.h"
 #include "BattleTank.h"
 
 
@@ -41,13 +42,15 @@ void ATankPlayerController::AimTowardsCrosshair()
 
 	FVector HitLocation; // Out parameter
 
-	// Get world location of linetrace through crosshair
-	if (GetSightRayHitLocation(HitLocation)) // If linetrace hits the landscape
+	// Get the world location coordinates of where a projection from the camera through the crosshair hits
+
+	if (GetSightRayHitLocation(HitLocation)) // If linetrace projection hits a visible object
 	{
 		// Tell controlled tank to aim at this point
 		GetControlledTank()->AimAt(HitLocation);
 	}
 
+	// If what the crosshair is aiming at isn't a visible object or is out of range, don't elevate the tank barrel
 }
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector & OutHitLocation) const
@@ -75,6 +78,10 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector & OutHitLocation) con
 	// De-project the screen position of the crosshair; tells us the
 	// direction in the world that the crosshair is facing
 	FVector CameraLookDirection;
+
+	// Deproject the crosshair given its location on the screen (ScreenLocation)
+	// and the direction the camera is facing (gives us a vector that effectively
+	// goes into the game in the direction the camera is facing through the crosshair).
 	if (GetLookDirection(ScreenLocation, CameraLookDirection))
 	{
 		// Ray cast along that look direction and see what we hit (up to a max range),
@@ -84,8 +91,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector & OutHitLocation) con
 	}
 	else
 	{
-		OutHitLocation = FVector(0); // If we aren't aiming at anything
-		return false;
+		return false; // Performing the deprojection on the crosshair failed
 	}
 
 }
@@ -115,5 +121,8 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 		OutHitLocation = HitResult.Location;
 		return true;
 	}
+
+	// Setting this to be a zero vector causes the turret to reset to neutral position when aiming at something out of range
+	// OutHitLocation = FVector(0);
 	return false; // Line trace didn't succeed
 }
