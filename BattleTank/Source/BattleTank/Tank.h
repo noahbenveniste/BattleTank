@@ -65,6 +65,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Firing)
 	float LaunchSpeed = 100000; // TODO: find reasonable init value
 
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
+
 	// Gives us the ability to set a projectile type for each tank instance.
 	// We do this instead of UClass* so that a designer can only choose a
 	// class of type AProjectile that we've designed.
@@ -74,4 +77,6 @@ private:
 	// Local barrel reference for spawning projectiles
 	UTankBarrel* Barrel = nullptr;
 	
+	// The last time the gun was fired; used for limiting the fire rate of the tank's gun
+	double LastFiredTime = 0;
 };

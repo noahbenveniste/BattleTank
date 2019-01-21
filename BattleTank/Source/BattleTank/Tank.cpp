@@ -54,20 +54,25 @@ void ATank::AimAt(FVector HitLocation)
 
 void ATank::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
-	
-	if (!Barrel) // Check if barrel reference failed to be set
-	{
-		return;
-	}
-	else
+	// Get the current time and subtract the time we last fired at, check if the reload time has elapsed
+	bool isReloaded = (FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds;
+
+	if (Barrel && isReloaded) // Check if barrel reference was set and that we're ready to fire again
 	{
 		// Spawn projectile at barrel socket location
-		GetWorld()->SpawnActor<AProjectile>(
+		// Remember, AProjectile is a class that we created that inherits from actor
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			this->ProjectileBlueprint, // The class type we want to spawn, as specified in the Projectile blueprint (or use default specified in header)
 			this->Barrel->GetSocketLocation(FName("Projectile")), // Location of where we want to spawn the actor (the socket is on the TankBarrel static mesh)
 			this->Barrel->GetSocketRotation(FName("Projectile")) // Rotation for the spawned actor (the socket is on the TankBarrel static mesh)
 			);
+
+		// Each projectile has a default sub object ProjectileMotionComponent. Call the
+		// LaunchProjectile method from this component on the AProjectile that we just spawned.
+		// LaunchSpeed is defined in our header file.
+		Projectile->LaunchProjectile(LaunchSpeed);
+
+		LastFiredTime = FPlatformTime::Seconds(); // Set the time for when we last fired
 	}
 
 }

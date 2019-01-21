@@ -47,6 +47,7 @@ void ATankAIController::Tick(float DeltaTime)
 		AimTowardsPlayer();
 
 		// Fire if ready
+		GetControlledTank()->Fire();
 	}
 }
 
