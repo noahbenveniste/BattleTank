@@ -62,10 +62,12 @@ private:
 
 
 	// Initiailize gun projectile speed; can be edited in blueprint
-	UPROPERTY(EditAnywhere, Category = Firing)
+	// EditDefaultsOnly means we can't edit these values on a tank by tank
+	// basis, just the default value for all tank instances
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float LaunchSpeed = 100000; // TODO: find reasonable init value
 
-	UPROPERTY(EditAnywhere, Category = Firing)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
 
 	// Gives us the ability to set a projectile type for each tank instance.
