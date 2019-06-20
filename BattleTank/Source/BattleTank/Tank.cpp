@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "TankBarrel.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
 
 // Sets default values
 ATank::ATank()
@@ -14,6 +15,11 @@ ATank::ATank()
 	// Adds the aiming component to the Tank upon construction; visible in blueprint but it can't be removed from
 	// the blueprint, which is what we want
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+
+	// In lecture 213 we change up the component architecture and do something different with the movement component
+	// Now, unlike the aiming component, the movement component doesn't show up by default as an inherited component
+	// and is now blueprint spawnable.
+	// TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("Movement Component"));
 
 }
 

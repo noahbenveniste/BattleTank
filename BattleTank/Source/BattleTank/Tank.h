@@ -12,6 +12,7 @@
 // to use any of these classes in the implementation, we'll #include them in the
 // actuall cpp file.
 class UTankAimingComponent;
+class UTankMovementComponent;
 class UTankBarrel;
 class UTankTurret;
 class AProjectile;
@@ -23,6 +24,8 @@ class BATTLETANK_API ATank : public APawn
 
 protected:
 	UTankAimingComponent* TankAimingComponent = nullptr;
+	UPROPERTY(BlueprintReadOnly)
+	UTankMovementComponent* TankMovementComponent = nullptr;
 
 public:
 	UTankAimingComponent* GetTankAimingComponent();
