@@ -28,4 +28,7 @@ private:
 	void AimTowardsPlayer();
 	// Get the tank that the player controller is possessing; used for aiming and things like that
 	ATank* GetPlayerTank() const;
+
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float MinimumEngagementDistance = 3000;  // How close the AI tank can get to the player tank
 };

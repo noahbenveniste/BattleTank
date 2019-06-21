@@ -41,7 +41,8 @@ void ATankAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime); // Call superclass's Tick function first
 	if (GetPlayerTank())
 	{
-		// TODO: Move towards player
+		// Move towards player
+		MoveToActor(GetPlayerTank(), MinimumEngagementDistance);
 
 		// Aim towards player
 		AimTowardsPlayer();

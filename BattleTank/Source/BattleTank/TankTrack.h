@@ -25,5 +25,5 @@ public:
 	// our precision I'll round down to 58000
 	// Also this assumes no friction.
 	UPROPERTY(EditDefaultsOnly)
-	float TrackMaxDrivingForce = 58000;
+	float TrackMaxDrivingForce = 25000;
 };
