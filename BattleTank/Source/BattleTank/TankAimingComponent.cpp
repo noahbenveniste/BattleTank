@@ -6,7 +6,7 @@
 						// in a header if you're inheriting from something. We used a forward declaration in the header file
 						// so we could talk about UTankBarrel in some of the method declarations.
 #include "TankTurret.h" // Same as the above for TankBarrel
-
+#include "Projectile.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -93,5 +93,32 @@ void UTankAimingComponent::RotateTurretTowards(FVector AimDirection)
 	auto DeltaRotator = AimAsRotator - TurretRotator;
 
 	Turret->Rotate(DeltaRotator.Yaw);
+}
+
+void UTankAimingComponent::Fire()
+{
+	// Pointer protection
+	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
+
+	// Get the current time and subtract the time we last fired at, check if the reload time has elapsed
+	bool isReloaded = (FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds;
+
+	if (isReloaded) // Check if barrel reference was set and that we're ready to fire again
+	{
+		// Spawn projectile at barrel socket location
+		// Remember, AProjectile is a class that we created that inherits from actor
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			this->ProjectileBlueprint, // The class type we want to spawn, as specified in the Projectile blueprint (or use default specified in header)
+			this->Barrel->GetSocketLocation(FName("Projectile")), // Location of where we want to spawn the actor (the socket is on the TankBarrel static mesh)
+			this->Barrel->GetSocketRotation(FName("Projectile")) // Rotation for the spawned actor (the socket is on the TankBarrel static mesh)
+			);
+
+		// Each projectile has a default sub object ProjectileMotionComponent. Call the
+		// LaunchProjectile method from this component on the AProjectile that we just spawned.
+		// LaunchSpeed is defined in our header file.
+		Projectile->LaunchProjectile(LaunchSpeed);
+
+		LastFiredTime = FPlatformTime::Seconds(); // Set the time for when we last fired
+	}
 }
 

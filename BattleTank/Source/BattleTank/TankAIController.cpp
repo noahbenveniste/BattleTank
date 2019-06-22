@@ -50,9 +50,13 @@ void ATankAIController::Tick(float DeltaTime)
 	// Aim towards player
 	AimTowardsPlayer();
 
-	// TODO: Fix firing functionality
-	// Fire if ready
-	// GetControlledTank()->Fire();
+	// TODO: Refactor this into a FireAtPlayer() method
+	// Get the aiming component
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	// Pointer protection
+	if (!ensure(AimingComponent)) { return; }
+	// Fire
+	AimingComponent->Fire();
 }
 
 void ATankAIController::AimTowardsPlayer()

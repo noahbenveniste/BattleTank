@@ -21,6 +21,7 @@ enum class EFiringState : uint8
 
 class UTankBarrel; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
 class UTankTurret;
+class AProjectile;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API UTankAimingComponent : public UActorComponent
@@ -32,7 +33,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = State)
 	EFiringState CurrentFiringState = EFiringState::RELOADING;
 
-public:	
+public:
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	void Fire();
+
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
@@ -47,6 +51,18 @@ private:
 	// basis, just the default value for all tank instances
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float LaunchSpeed = 100000; // TODO: find reasonable init value
+
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
+
+	// Gives us the ability to set a projectile type for each tank instance.
+	// We do this instead of UClass* so that a designer can only choose a
+	// class of type AProjectile that we've designed.
+	UPROPERTY(EditAnywhere, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	// The last time the gun was fired; used for limiting the fire rate of the tank's gun
+	double LastFiredTime = 0;
 
 	UTankBarrel* Barrel = nullptr;
 
