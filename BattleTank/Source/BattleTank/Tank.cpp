@@ -24,6 +24,12 @@ ATank::ATank()
 
 }
 
+void ATank::BeginPlay()
+{
+	// Need to call this to get the Tank_BP BeginPlay event to run
+	Super::BeginPlay();
+}
+
 UTankAimingComponent * ATank::GetTankAimingComponent()
 {
 	return TankAimingComponent;

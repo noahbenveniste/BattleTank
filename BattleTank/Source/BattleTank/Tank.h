@@ -41,6 +41,8 @@ private:
 	// Sets default values for this pawn's properties
 	ATank();
 
+	virtual void BeginPlay() override;
+
 	// Initiailize gun projectile speed; can be edited in blueprint
 	// EditDefaultsOnly means we can't edit these values on a tank by tank
 	// basis, just the default value for all tank instances
