@@ -11,7 +11,7 @@ void ATankAIController::BeginPlay()
 
 	// Some code to test that we are correctly possessing a tank
 	auto ControlledTank = GetControlledTank();
-	if (!ControlledTank) // If the thing this points to is null, a tank isn't being possessed
+	if (!ensure(ControlledTank)) // If the thing this points to is null, a tank isn't being possessed
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TankAIController not possessing a tank"));
 	}
@@ -24,7 +24,7 @@ void ATankAIController::BeginPlay()
 	ATank* PlayerTank = GetPlayerTank();
 	
 	// Check for nullptr
-	if (!PlayerTank)
+	if (!ensure(PlayerTank))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No player tank found"));
 	}
@@ -39,7 +39,7 @@ void ATankAIController::BeginPlay()
 void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); // Call superclass's Tick function first
-	if (GetPlayerTank())
+	if (ensure(GetPlayerTank()))
 	{
 		// Move towards player
 		MoveToActor(GetPlayerTank(), MinimumEngagementDistance);
@@ -54,7 +54,7 @@ void ATankAIController::Tick(float DeltaTime)
 
 void ATankAIController::AimTowardsPlayer()
 {
-	if (!GetControlledTank()) // If we aren't possessing a tank, just return
+	if (!ensure(GetControlledTank())) // If we aren't possessing a tank, just return
 	{
 		return;
 	}
@@ -71,7 +71,7 @@ ATank* ATankAIController::GetPlayerTank() const
 	ATank* PlayerTank = nullptr;
 
 	// Check for null pointer
-	if (!PlayerController)
+	if (!ensure(PlayerController))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No TankPlayerController found"));
 	}

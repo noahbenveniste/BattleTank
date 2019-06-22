@@ -38,16 +38,19 @@ UTankAimingComponent * ATank::GetTankAimingComponent()
 void ATank::AimAt(FVector HitLocation)
 {
 	// Pointer protection! This was the source of a nasty bug in lecture 222-223
-	if (!TankAimingComponent) { return; }
+	if (!ensure(TankAimingComponent)) { return; }
 	this->TankAimingComponent->AimAt(HitLocation, this->LaunchSpeed);
 }
 
 void ATank::Fire()
 {
+	// Pointer protection
+	if (!ensure(Barrel)) { return; }
+
 	// Get the current time and subtract the time we last fired at, check if the reload time has elapsed
 	bool isReloaded = (FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds;
 
-	if (Barrel && isReloaded) // Check if barrel reference was set and that we're ready to fire again
+	if (isReloaded) // Check if barrel reference was set and that we're ready to fire again
 	{
 		// Spawn projectile at barrel socket location
 		// Remember, AProjectile is a class that we created that inherits from actor

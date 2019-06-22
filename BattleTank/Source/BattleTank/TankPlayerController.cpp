@@ -12,7 +12,7 @@ void ATankPlayerController::BeginPlay()
 	
 	// Broadcast on our blueprint implementable event when we get the reference to our TankAimingComponent
 	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
-	if (AimingComponent)
+	if (ensure(AimingComponent))
 	{
 		FoundAimingComponent(AimingComponent);
 	}
@@ -35,10 +35,8 @@ ATank* ATankPlayerController::GetControlledTank() const
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank()) // If we aren't possessing a tank, just return
-	{
-		return;
-	}
+	// If we aren't possessing a tank, just return
+	if (!ensure(GetControlledTank())) { return; }
 
 	FVector HitLocation; // Out parameter
 
