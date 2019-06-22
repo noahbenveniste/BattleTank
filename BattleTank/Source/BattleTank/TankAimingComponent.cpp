@@ -18,14 +18,15 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
+{
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
+}
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-
-	if (!Barrel)
-	{
-		return;
-	}
+	if (!Barrel) { return; }
 
 	auto OurTankName = GetOwner()->GetName();
 	// UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from location %s"), *OurTankName, *HitLocation.ToString(), *Barrel->GetComponentLocation().ToString());
@@ -72,18 +73,11 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	this->Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
-{
-	this->Turret = TurretToSet;
-}
-
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
+	// Pointer protection
+	if (!Barrel || !Turret) { return; }
+
 	// Determine difference between current barrel rotation and AimDirection
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation(); // Gets the roll, pitch and yaw of the barrel at this moment
 	auto AimAsRotator = AimDirection.Rotation(); // Convert the aim direction vector into a rotator

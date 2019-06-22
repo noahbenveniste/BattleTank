@@ -32,24 +32,6 @@ protected:
 public:
 	UTankAimingComponent* GetTankAimingComponent();
 
-	/**
-	 * Function that is called from the Tank blueprint's event graph
-	 * to set the reference to the barrel static mesh component in the blueprint
-	 * so we can manipulate it in C++. Need this helper function in
-	 * addition to the one in TankAimingComponent because we only have
-	 * a blueprint even graph for the Tank where we can call this function,
-	 * not one for the aiming component. Normally these types of message
-	 * chains are bad practice but in this case it helps promote encapsulation.
-	 */
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetBarrelReference(UTankBarrel *BarrelToSet);
-
-	/**
-	 * Another function similar to the above one, but specifically for the tank's turret
-	 */
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetTurretReference(UTankTurret *TurretToSet);
-
 	void AimAt(FVector HitLocation);
 
 	UFUNCTION(BlueprintCallable)
@@ -58,13 +40,6 @@ public:
 private:
 	// Sets default values for this pawn's properties
 	ATank();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 	// Initiailize gun projectile speed; can be edited in blueprint
 	// EditDefaultsOnly means we can't edit these values on a tank by tank
@@ -81,7 +56,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Setup)
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
-	// Local barrel reference for spawning projectiles
+	// TODO: Remove when we refactor aiming component architecture
 	UTankBarrel* Barrel = nullptr;
 	
 	// The last time the gun was fired; used for limiting the fire rate of the tank's gun

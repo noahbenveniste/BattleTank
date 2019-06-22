@@ -14,7 +14,8 @@ ATank::ATank()
 
 	// Adds the aiming component to the Tank upon construction; visible in blueprint but it can't be removed from
 	// the blueprint, which is what we want
-	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+	// No longer doing default sub object with either component
+	// TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
 
 	// In lecture 213 we change up the component architecture and do something different with the movement component
 	// Now, unlike the aiming component, the movement component doesn't show up by default as an inherited component
@@ -23,34 +24,9 @@ ATank::ATank()
 
 }
 
-// Called when the game starts or when spawned
-void ATank::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called to bind functionality to input
-void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 UTankAimingComponent * ATank::GetTankAimingComponent()
 {
 	return TankAimingComponent;
-}
-
-void ATank::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	GetTankAimingComponent()->SetBarrelReference(BarrelToSet);
-	this->Barrel = BarrelToSet;
-}
-
-void ATank::SetTurretReference(UTankTurret * TurretToSet)
-{
-	GetTankAimingComponent()->SetTurretReference(TurretToSet);
 }
 
 void ATank::AimAt(FVector HitLocation)
