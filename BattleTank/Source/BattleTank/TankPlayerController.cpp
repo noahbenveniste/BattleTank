@@ -12,14 +12,8 @@ void ATankPlayerController::BeginPlay()
 	
 	// Broadcast on our blueprint implementable event when we get the reference to our TankAimingComponent
 	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
-	if (ensure(AimingComponent))
-	{
-		FoundAimingComponent(AimingComponent);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player controller could not find TankAimingComponent at BeginPlay"));
-	}
+	if (!ensure(AimingComponent)) { return; }
+	FoundAimingComponent(AimingComponent);
 }
 
 void ATankPlayerController::Tick(float DeltaTime)

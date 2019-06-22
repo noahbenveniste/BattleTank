@@ -20,13 +20,15 @@ ATank::ATank()
 	// Now, unlike the aiming component, the movement component doesn't show up by default as an inherited component
 	// and is now blueprint spawnable.
 	// TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("Movement Component"));
-
 }
 
 void ATank::BeginPlay()
 {
 	// Need to call this to get the Tank_BP BeginPlay event to run
 	Super::BeginPlay();
+
+	// TODO: Remove once refactoring is done
+	TankAimingComponent = FindComponentByClass<UTankAimingComponent>();
 }
 
 UTankAimingComponent * ATank::GetTankAimingComponent()

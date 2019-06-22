@@ -42,6 +42,12 @@ public:
 	void AimAt(FVector HitLocation, float LaunchSpeed);
 	
 private:
+	// Initiailize gun projectile speed; can be edited in blueprint
+	// EditDefaultsOnly means we can't edit these values on a tank by tank
+	// basis, just the default value for all tank instances
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 100000; // TODO: find reasonable init value
+
 	UTankBarrel* Barrel = nullptr;
 
 	UTankTurret* Turret = nullptr;

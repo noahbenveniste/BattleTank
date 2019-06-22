@@ -39,9 +39,7 @@ private:
 
 	virtual void BeginPlay() override;
 
-	// Initiailize gun projectile speed; can be edited in blueprint
-	// EditDefaultsOnly means we can't edit these values on a tank by tank
-	// basis, just the default value for all tank instances
+	// TODO: Remove when firing is moved to aiming component
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float LaunchSpeed = 100000; // TODO: find reasonable init value
 
