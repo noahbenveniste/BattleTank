@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "Tank.h"
 #include "TankPlayerController.h"
+// Implicit dependency on movement component via pathfinding logic
 
 void ATankAIController::BeginPlay()
 {
