@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankPlayerController.h"
+#include "TankAimingComponent.h"
 #include "Tank.h"
 #include "BattleTank.h"
 
@@ -9,17 +10,16 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay(); // Ensure that the BeginPlay that we are overriding is run first
 	
-	// Some code to test that we are correctly possessing a tank
-	auto ControlledTank = GetControlledTank();
-	if (!ControlledTank)
+	// Broadcast on our blueprint implementable event when we get the reference to our TankAimingComponent
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (AimingComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TankPlayerController not possessing a tank"));
+		FoundAimingComponent(AimingComponent);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TankPlayerController possessing: %s"), *ControlledTank->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Player controller could not find TankAimingComponent at BeginPlay"));
 	}
-	
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
