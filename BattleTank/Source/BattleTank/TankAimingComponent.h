@@ -9,6 +9,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "TankAimingComponent.generated.h"
 
+// Enum for aiming state
+
+UENUM()
+enum class EFiringState : uint8
+{
+	LOCKED,
+	AIMING,
+	RELOADING
+};
+
 class UTankBarrel; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
 class UTankTurret;
 
@@ -18,6 +28,9 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 	GENERATED_BODY()
 
 protected:
+	// Tank's current firing status; defaults to reloading
+	UPROPERTY(BlueprintReadOnly, Category = State)
+	EFiringState CurrentFiringState = EFiringState::RELOADING;
 
 public:	
 
