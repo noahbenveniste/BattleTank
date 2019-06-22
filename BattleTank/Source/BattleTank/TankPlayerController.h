@@ -7,8 +7,6 @@
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h" // Must be the last include
 
-class ATank; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
-
 /**
  * 
  */
@@ -23,7 +21,6 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Setup)
-	ATank* GetControlledTank() const;
 
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;

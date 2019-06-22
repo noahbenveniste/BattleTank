@@ -2,8 +2,8 @@
 
 #include "TankAIController.h"
 #include "Engine/World.h"
-#include "Tank.h"
-#include "TankPlayerController.h"
+#include "GameFramework/PlayerController.h"
+#include "TankAimingComponent.h"
 // Implicit dependency on movement component via pathfinding logic
 
 void ATankAIController::BeginPlay()
@@ -11,7 +11,7 @@ void ATankAIController::BeginPlay()
 	Super::BeginPlay(); // Ensure that the BeginPlay that we are overriding is run first
 
 	// Some code to test that we are correctly possessing a tank
-	auto ControlledTank = GetControlledTank();
+	auto ControlledTank = GetPawn();
 	if (!ensure(ControlledTank)) // If the thing this points to is null, a tank isn't being possessed
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TankAIController not possessing a tank"));
@@ -22,7 +22,7 @@ void ATankAIController::BeginPlay()
 	}
 
 	// Try to get the player tank
-	ATank* PlayerTank = GetPlayerTank();
+	auto PlayerTank = GetPlayerTank();
 	
 	// Check for nullptr
 	if (!ensure(PlayerTank))
@@ -40,54 +40,33 @@ void ATankAIController::BeginPlay()
 void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); // Call superclass's Tick function first
-	if (ensure(GetPlayerTank()))
-	{
-		// Move towards player
-		MoveToActor(GetPlayerTank(), MinimumEngagementDistance);
+	
+	// Pointer protection for this tank and the player tank
+	if (!ensure(GetPlayerTank() && GetPawn())) { return; }
+	
+	// Move towards player
+	MoveToActor(GetPlayerTank(), MinimumEngagementDistance);
 
-		// Aim towards player
-		AimTowardsPlayer();
+	// Aim towards player
+	AimTowardsPlayer();
 
-		// Fire if ready
-		GetControlledTank()->Fire();
-	}
+	// TODO: Fix firing functionality
+	// Fire if ready
+	// GetControlledTank()->Fire();
 }
 
 void ATankAIController::AimTowardsPlayer()
 {
-	if (!ensure(GetControlledTank())) // If we aren't possessing a tank, just return
-	{
-		return;
-	}
-
-	GetControlledTank()->AimAt(GetPlayerTank()->GetTargetLocation());
+	// Get the aiming component
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	// Pointer protection
+	if (!ensure(AimingComponent)) { return; }
+	AimingComponent->AimAt(GetPlayerTank()->GetTargetLocation());
 }
 
-ATank* ATankAIController::GetPlayerTank() const
+APawn* ATankAIController::GetPlayerTank() const
 {
-	// Get the world, then get the first player controller, cast it to an ATankPlayerController
-	ATankPlayerController* PlayerController = Cast<ATankPlayerController>(GetWorld()->GetFirstPlayerController());
-
-	// Init return variable
-	ATank* PlayerTank = nullptr;
-
-	// Check for null pointer
-	if (!ensure(PlayerController))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No TankPlayerController found"));
-	}
-	else
-	{
-		// If a player controller is found, get the controlled tank
-		PlayerTank = PlayerController->GetControlledTank();
-	}
-
-	return PlayerTank;
-}
-
-ATank* ATankAIController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
+	return GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 

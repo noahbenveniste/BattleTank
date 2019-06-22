@@ -3,7 +3,6 @@
 #include "Tank.h"
 #include "Projectile.h"
 #include "TankBarrel.h"
-#include "TankAimingComponent.h"
 
 // Sets default values
 ATank::ATank()
@@ -26,21 +25,6 @@ void ATank::BeginPlay()
 {
 	// Need to call this to get the Tank_BP BeginPlay event to run
 	Super::BeginPlay();
-
-	// TODO: Remove once refactoring is done
-	TankAimingComponent = FindComponentByClass<UTankAimingComponent>();
-}
-
-UTankAimingComponent * ATank::GetTankAimingComponent()
-{
-	return TankAimingComponent;
-}
-
-void ATank::AimAt(FVector HitLocation)
-{
-	// Pointer protection! This was the source of a nasty bug in lecture 222-223
-	if (!ensure(TankAimingComponent)) { return; }
-	this->TankAimingComponent->AimAt(HitLocation, this->LaunchSpeed);
 }
 
 void ATank::Fire()

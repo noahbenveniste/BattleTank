@@ -24,7 +24,7 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 	Turret = TurretToSet;
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
 	if (!ensure(Barrel)) { return; }
 
@@ -51,7 +51,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		LaunchVelocity,
 		StartLocation,
 		HitLocation,
-		LaunchSpeed, // Passed to us by the tank
+		LaunchSpeed, // Class constant
 		false, // want to use low arc, not high arc projectile path
 		0, // Collision radius
 		0, // OverrideGravityZ

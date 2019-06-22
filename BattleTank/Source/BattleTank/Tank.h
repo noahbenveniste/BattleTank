@@ -11,9 +11,7 @@
 // This prevents dependencies chains and decouples our architecture. If we need
 // to use any of these classes in the implementation, we'll #include them in the
 // actuall cpp file.
-class UTankAimingComponent;
 class UTankBarrel;
-class UTankTurret;
 class AProjectile;
 
 UCLASS()
@@ -21,15 +19,7 @@ class BATTLETANK_API ATank : public APawn
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY(BlueprintReadOnly)
-	UTankAimingComponent* TankAimingComponent = nullptr;
-
 public:
-	UTankAimingComponent* GetTankAimingComponent();
-
-	void AimAt(FVector HitLocation);
-
 	UFUNCTION(BlueprintCallable)
 	void Fire();
 
