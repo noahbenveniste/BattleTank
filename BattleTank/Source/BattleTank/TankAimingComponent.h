@@ -68,6 +68,10 @@ private:
 
 	UTankTurret* Turret = nullptr;
 
+	virtual void BeginPlay() override;
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
+
 	void MoveBarrelTowards(FVector AimDirection);
 
 	void RotateTurretTowards(FVector AimDirection);

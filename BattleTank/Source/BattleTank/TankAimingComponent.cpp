@@ -18,10 +18,25 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+void UTankAimingComponent::BeginPlay()
+{
+	// Init LastFiredTime to make Tanks not be able to fire as soon as they spawn
+	LastFiredTime = FPlatformTime::Seconds();
+}
+
 void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
 {
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
+{
+	if ((FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds)
+	{
+		CurrentFiringState = EFiringState::RELOADING;
+	}
+	// TODO: Handle AIMING and LOCKED states
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
@@ -97,14 +112,12 @@ void UTankAimingComponent::RotateTurretTowards(FVector AimDirection)
 
 void UTankAimingComponent::Fire()
 {
-	// Pointer protection
-	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
-
-	// Get the current time and subtract the time we last fired at, check if the reload time has elapsed
-	bool isReloaded = (FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds;
-
-	if (isReloaded) // Check if barrel reference was set and that we're ready to fire again
+	if (CurrentFiringState != EFiringState::RELOADING) // Check if barrel reference was set and that we're ready to fire again
 	{
+		// Pointer protection
+		if (!ensure(Barrel)) { return; }
+		if (!ensure(ProjectileBlueprint)) { return; }
+
 		// Spawn projectile at barrel socket location
 		// Remember, AProjectile is a class that we created that inherits from actor
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
