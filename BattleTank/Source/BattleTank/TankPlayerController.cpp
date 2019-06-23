@@ -24,6 +24,8 @@ void ATankPlayerController::Tick(float DeltaTime)
 void ATankPlayerController::AimTowardsCrosshair()
 {
 	// If we aren't possessing a tank, just return
+	// Note: Need this line (or at least a check for null pointer). Not having it causes unreal
+	//       to hard crash on compilation for some reason.
 	if (!ensure(GetPawn())) { return; }
 
 	// Get the aiming component

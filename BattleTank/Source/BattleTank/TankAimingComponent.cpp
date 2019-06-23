@@ -32,11 +32,18 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
-	if ((FPlatformTime::Seconds() - LastFiredTime) > ReloadTimeInSeconds)
+	if ((FPlatformTime::Seconds() - LastFiredTime) < ReloadTimeInSeconds)
 	{
 		CurrentFiringState = EFiringState::RELOADING;
 	}
-	// TODO: Handle AIMING and LOCKED states
+	else if (bBarrelMoving)
+	{
+		CurrentFiringState = EFiringState::AIMING;
+	}
+	else
+	{
+		CurrentFiringState = EFiringState::LOCKED;
+	}
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
@@ -97,6 +104,18 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation(); // Gets the roll, pitch and yaw of the barrel at this moment
 	auto AimAsRotator = AimDirection.Rotation(); // Convert the aim direction vector into a rotator
 	auto DeltaRotator = AimAsRotator - BarrelRotator; // This is the aim as a rotation relative to the current orientation of the tank's barrel
+
+	// Use DeltaRotator to check if the barrel is rotating. If the difference between the barrel's rotation and the
+	// aim vector as a rotator is very large, then the player has moved the aim reticle away and the barrel is
+	// rotating towards it.
+	if (!DeltaRotator.IsNearlyZero(0.5))
+	{
+		bBarrelMoving = true;
+	}
+	else
+	{
+		bBarrelMoving = false;
+	}
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 }
