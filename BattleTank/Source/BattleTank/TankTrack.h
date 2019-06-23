@@ -15,6 +15,9 @@ class BATTLETANK_API UTankTrack : public UStaticMeshComponent
 	GENERATED_BODY()
 	
 public:
+	// Constructor
+	UTankTrack();
+
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void SetThrottle(float Throttle);
 	
@@ -26,4 +29,10 @@ public:
 	// Also this assumes no friction.
 	UPROPERTY(EditDefaultsOnly)
 	float TrackMaxDrivingForce = 25000;
+
+protected:
+	virtual void OnRegister() override;
+
+private:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 };

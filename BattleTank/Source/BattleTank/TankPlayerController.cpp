@@ -24,9 +24,11 @@ void ATankPlayerController::Tick(float DeltaTime)
 void ATankPlayerController::AimTowardsCrosshair()
 {
 	// If we aren't possessing a tank, just return
-	// Note: Need this line (or at least a check for null pointer). Not having it causes unreal
-	//       to hard crash on compilation for some reason.
-	if (!ensure(GetPawn())) { return; }
+	// Note: Need this line (or at least a check for null pointer). Not having it causes Unreal
+	//       to hard crash if you have the TankPlayerController BP open and you're not 
+	//		 possessing a Tank. Not using an ensure here just makes it so we don't have an error
+	//       message spit out every time we compile.
+	if (!GetPawn()) { return; }
 
 	// Get the aiming component
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
