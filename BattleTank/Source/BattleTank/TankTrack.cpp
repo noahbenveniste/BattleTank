@@ -7,6 +7,18 @@ UTankTrack::UTankTrack()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+
+	// We need this to be turned on so the OnHit event works
+	SetNotifyRigidBodyCollision(true);
+}
+
+void UTankTrack::BeginPlay()
+{
+	// Always call the super method
+	Super::BeginPlay();
+
+	// Need to register the delegate for OnHit
+	OnComponentHit.AddDynamic(this, &UTankTrack::OnHit);
 }
 
 void UTankTrack::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
@@ -14,7 +26,6 @@ void UTankTrack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	// The call to super isn't needed here but it's considered best practice. Can cause issues with
 	// blueprints if you don't call the superclasses's method.
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	UE_LOG(LogTemp, Warning, TEXT("Tank track ticking"));
 
 	// Calculate current slippage speed i.e. check to see if there is any velocity component
 	// to the right or left (can just check right, left will be negative).
@@ -40,6 +51,11 @@ void UTankTrack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 	// Add the correcting force to the TankRoot directly
 	TankRoot->AddForce(CorrectingForce);
+}
+
+void UTankTrack::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Track hitting ground"));
 }
 
 void UTankTrack::SetThrottle(float Throttle)
