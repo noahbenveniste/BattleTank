@@ -20,6 +20,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void SetThrottle(float Throttle);
+
+	void DriveTrack();
 	
 	// Max force per track in newtons
 	// A tank is roughly 45000 kilos, the Abrams can go 0-20 mph
@@ -40,4 +42,8 @@ private:
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	void ApplyCorrectingForce();
+
+	float CurrentThrottle = 0;
 };
