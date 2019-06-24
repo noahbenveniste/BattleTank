@@ -18,6 +18,11 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+EFiringState UTankAimingComponent::GetCurrentFiringState() const
+{
+	return CurrentFiringState;
+}
+
 void UTankAimingComponent::BeginPlay()
 {
 	// Init LastFiredTime to make Tanks not be able to fire as soon as they spawn

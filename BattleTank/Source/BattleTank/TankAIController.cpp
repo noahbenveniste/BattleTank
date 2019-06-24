@@ -45,18 +45,20 @@ void ATankAIController::Tick(float DeltaTime)
 	if (!ensure(GetPlayerTank() && GetPawn())) { return; }
 	
 	// Move towards player
-	MoveToActor(GetPlayerTank(), MinimumEngagementDistance);
+	MoveToActor(GetPlayerTank(), AcceptanceRadius);
 
 	// Aim towards player
 	AimTowardsPlayer();
 
-	// TODO: Refactor this into a FireAtPlayer() method
 	// Get the aiming component
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	// Pointer protection
 	if (!ensure(AimingComponent)) { return; }
-	// Fire
-	AimingComponent->Fire();
+	// Check if aiming or locked
+	if (AimingComponent->GetCurrentFiringState() == EFiringState::LOCKED)
+	{
+		AimingComponent->Fire();
+	}
 }
 
 void ATankAIController::AimTowardsPlayer()

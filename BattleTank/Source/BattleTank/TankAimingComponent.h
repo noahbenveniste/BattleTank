@@ -44,6 +44,8 @@ public:
 	void Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
 	void AimAt(FVector HitLocation);
+
+	EFiringState GetCurrentFiringState() const;
 	
 private:
 	// Initiailize gun projectile speed; can be edited in blueprint
