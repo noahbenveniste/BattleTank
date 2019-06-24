@@ -77,6 +77,10 @@ void UTankTrack::ApplyCorrectingForce()
 
 void UTankTrack::SetThrottle(float Throttle)
 {
+	// Note: clamping the throttle values prevents user from combining WASD input,
+	//	     can only input W, A, S or D one at a time. However the driving does
+	//       feel a bit smoother. May need to play around with this.
+
 	// CurrentThrottle = FMath::Clamp<float>(CurrentThrottle + Throttle, -1, 1);
 	CurrentThrottle = CurrentThrottle + Throttle;
 }

@@ -37,7 +37,6 @@ void ATankPlayerController::AimTowardsCrosshair()
 	FVector HitLocation; // Out parameter
 
 	// Get the world location coordinates of where a projection from the camera through the crosshair hits
-
 	if (GetSightRayHitLocation(HitLocation)) // If linetrace projection hits a visible object
 	{
 		// Tell controlled tank to aim at this point
