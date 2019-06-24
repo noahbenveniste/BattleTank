@@ -72,7 +72,9 @@ private:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
 
-	bool bBarrelMoving = false;
+	bool IsBarrelMoving();
+
+	FVector AimDirection;
 
 	void MoveBarrelTowards(FVector AimDirection);
 

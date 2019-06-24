@@ -36,7 +36,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	{
 		CurrentFiringState = EFiringState::RELOADING;
 	}
-	else if (bBarrelMoving)
+	else if (IsBarrelMoving())
 	{
 		CurrentFiringState = EFiringState::AIMING;
 	}
@@ -44,6 +44,18 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	{
 		CurrentFiringState = EFiringState::LOCKED;
 	}
+}
+
+bool UTankAimingComponent::IsBarrelMoving()
+{
+	// Pointer protection
+	if (!ensure(Barrel)) { return false; }
+
+	// Get the barrel's forward vector
+	auto BarrelForwardVector = Barrel->GetForwardVector();
+
+	// Check if the barrel's forward vector is not equal to the current aim direction
+	return !BarrelForwardVector.Equals(AimDirection, 0.01);
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
@@ -78,7 +90,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		ESuggestProjVelocityTraceOption::DoNotTrace // Enum that specifies how we want to trace the path
 	)) 
 	{
-		auto AimDirection = LaunchVelocity.GetSafeNormal(); // Converts the velocity vector into a unit vector so we can set the barrel's orientation
+		AimDirection = LaunchVelocity.GetSafeNormal(); // Converts the velocity vector into a unit vector so we can set the barrel's orientation
 		// UE_LOG(LogTemp, Warning, TEXT("%s is aiming in direction %s"), *OurTankName, *AimDirection.ToString());
 		// auto Time = GetWorld()->GetTimeSeconds();
 		// UE_LOG(LogTemp, Warning, TEXT("Projectile velocity suggestion found at time %f"), Time);
@@ -103,18 +115,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto AimAsRotator = AimDirection.Rotation(); // Convert the aim direction vector into a rotator
 	auto DeltaRotator = AimAsRotator - BarrelRotator; // This is the aim as a rotation relative to the current orientation of the tank's barrel
 
-	// Use DeltaRotator to check if the barrel is rotating. If the difference between the barrel's rotation and the
-	// aim vector as a rotator is very large, then the player has moved the aim reticle away and the barrel is
-	// rotating towards it.
-	if (!DeltaRotator.IsNearlyZero(0.5))
-	{
-		bBarrelMoving = true;
-	}
-	else
-	{
-		bBarrelMoving = false;
-	}
-
 	Barrel->Elevate(DeltaRotator.Pitch);
 }
 
@@ -124,7 +124,7 @@ void UTankAimingComponent::RotateTurretTowards(FVector AimDirection)
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - TurretRotator;
 
-	// If the yaw angle to the desired rotation is greater than 180 degrees,
+	// If the yaw angle to the desired rotation is >= 180 degrees,
 	// its more efficient to just rotate the opposite direction
 	if (FMath::Abs(DeltaRotator.Yaw) < 180)
 	{
