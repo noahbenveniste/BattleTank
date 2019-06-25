@@ -39,17 +39,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
 
-	// How much ammo tanks start with
+	// How much ammo we have left
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	int StartingAmmoCount = 5;
+	int AmmoCount = 5;
 
 	// Tank's current firing status; defaults to reloading
 	UPROPERTY(BlueprintReadOnly, Category = State)
 	EFiringState CurrentFiringState = EFiringState::RELOADING;
-
-	// How much ammo we have left
-	UPROPERTY(BlueprintReadOnly, Category = State)
-	int AmmoCount = StartingAmmoCount;
 
 	// Gives us the ability to set a projectile type for each tank instance.
 	// We do this instead of UClass* so that a designer can only choose a
@@ -71,6 +67,7 @@ public:
 
 	EFiringState GetCurrentFiringState() const;
 
+	UFUNCTION(BlueprintCallable, Category = Firing)
 	int GetAmmoCount();
 	
 private:
