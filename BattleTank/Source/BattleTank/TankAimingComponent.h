@@ -16,7 +16,8 @@ enum class EFiringState : uint8
 {
 	LOCKED,
 	AIMING,
-	RELOADING
+	RELOADING,
+	EMPTY
 };
 
 class UTankBarrel; // Forward declaration, makes dependencies explicit without creating a chain of dependencies
@@ -29,9 +30,32 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 	GENERATED_BODY()
 
 protected:
+	// Initiailize gun projectile speed; can be edited in blueprint
+	// EditDefaultsOnly means we can't edit these values on a tank by tank
+	// basis, just the default value for all tank instances
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 100000; // TODO: find reasonable init value
+
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
+
+	// How much ammo tanks start with
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	int StartingAmmoCount = 5;
+
 	// Tank's current firing status; defaults to reloading
 	UPROPERTY(BlueprintReadOnly, Category = State)
 	EFiringState CurrentFiringState = EFiringState::RELOADING;
+
+	// How much ammo we have left
+	UPROPERTY(BlueprintReadOnly, Category = State)
+	int AmmoCount = StartingAmmoCount;
+
+	// Gives us the ability to set a projectile type for each tank instance.
+	// We do this instead of UClass* so that a designer can only choose a
+	// class of type AProjectile that we've designed.
+	UPROPERTY(EditAnywhere, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Firing)
@@ -46,23 +70,10 @@ public:
 	void AimAt(FVector HitLocation);
 
 	EFiringState GetCurrentFiringState() const;
+
+	int GetAmmoCount();
 	
 private:
-	// Initiailize gun projectile speed; can be edited in blueprint
-	// EditDefaultsOnly means we can't edit these values on a tank by tank
-	// basis, just the default value for all tank instances
-	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 100000; // TODO: find reasonable init value
-
-	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
-
-	// Gives us the ability to set a projectile type for each tank instance.
-	// We do this instead of UClass* so that a designer can only choose a
-	// class of type AProjectile that we've designed.
-	UPROPERTY(EditAnywhere, Category = Setup)
-	TSubclassOf<AProjectile> ProjectileBlueprint;
-
 	// The last time the gun was fired; used for limiting the fire rate of the tank's gun
 	double LastFiredTime = 0;
 

@@ -23,6 +23,11 @@ EFiringState UTankAimingComponent::GetCurrentFiringState() const
 	return CurrentFiringState;
 }
 
+int UTankAimingComponent::GetAmmoCount()
+{
+	return AmmoCount;
+}
+
 void UTankAimingComponent::BeginPlay()
 {
 	// Init LastFiredTime to make Tanks not be able to fire as soon as they spawn
@@ -37,7 +42,12 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
-	if ((FPlatformTime::Seconds() - LastFiredTime) < ReloadTimeInSeconds)
+	// Check if our magazine is empty
+	if (AmmoCount == 0)
+	{ 
+		CurrentFiringState = EFiringState::EMPTY;
+	}
+	else if ((FPlatformTime::Seconds() - LastFiredTime) < ReloadTimeInSeconds)
 	{
 		CurrentFiringState = EFiringState::RELOADING;
 	}
@@ -144,7 +154,7 @@ void UTankAimingComponent::RotateTurretTowards(FVector AimDirection)
 
 void UTankAimingComponent::Fire()
 {
-	if (CurrentFiringState != EFiringState::RELOADING) // Check if barrel reference was set and that we're ready to fire again
+	if (CurrentFiringState != EFiringState::RELOADING && CurrentFiringState != EFiringState::EMPTY) // Check that we have ammo and that we're reloaded
 	{
 		// Pointer protection
 		if (!ensure(Barrel)) { return; }
@@ -163,7 +173,11 @@ void UTankAimingComponent::Fire()
 		// LaunchSpeed is defined in our header file.
 		Projectile->LaunchProjectile(LaunchSpeed);
 
+		// Update the time we last fired to reset reload timer
 		LastFiredTime = FPlatformTime::Seconds(); // Set the time for when we last fired
+
+		// Decrement ammo count
+		AmmoCount--;
 	}
 }
 
