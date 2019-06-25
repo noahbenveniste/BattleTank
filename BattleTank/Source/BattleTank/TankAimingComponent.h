@@ -34,7 +34,7 @@ protected:
 	// EditDefaultsOnly means we can't edit these values on a tank by tank
 	// basis, just the default value for all tank instances
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 30000; // TODO: find reasonable init value
+	float LaunchSpeed = 8000; // TODO: find reasonable init value
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3; // TODO: find reasonable init value
