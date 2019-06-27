@@ -70,6 +70,10 @@ bool UTankAimingComponent::IsBarrelMoving()
 	auto BarrelForwardVector = Barrel->GetForwardVector();
 
 	// Check if the barrel's forward vector is not equal to the current aim direction
+
+	// TODO: Add check to see if barrel is at its lowest. If the x and y components of the vectors are equal
+	// and the barrel is at its min elevation, then we can assume that the barrel isn't moving
+
 	return !BarrelForwardVector.Equals(AimDirection, 0.01);
 }
 

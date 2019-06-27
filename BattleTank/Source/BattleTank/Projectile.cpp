@@ -27,9 +27,26 @@ AProjectile::AProjectile()
 	// Attach the launch blast to the root component
 	this->LaunchBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
+	// Create default sub object UParticleSystemComponent called ImpactBlast
+	this->ImpactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Impact Blast"));
+
+	// Attach the impact blast to the root component
+	this->ImpactBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	this->ImpactBlast->bAutoActivate = false;
+
 	// Adds a default sub object upon construction so that it can't be removed (similar to Tank and TankAimingComponent)
 	this->ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement Component"));
 	this->ProjectileMovementComponent->bAutoActivate = false;
+}
+
+// Called when the game starts or when spawned
+void AProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Need to register the delegate for OnHit.  The projectile is an actor, not
+	// a component. The collision mesh is the component that will be the delegate.
+	this->CollisionMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
 void AProjectile::LaunchProjectile(float Speed)
@@ -38,11 +55,13 @@ void AProjectile::LaunchProjectile(float Speed)
 	ProjectileMovementComponent->Activate();
 }
 
-// Called when the game starts or when spawned
-void AProjectile::BeginPlay()
+void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
 {
-	Super::BeginPlay();
-	
+	// When a projectile hits something, turn off its launch blast trail
+	this->LaunchBlast->Deactivate();
+
+	// Then, add the impact blast effect
+	this->ImpactBlast->Activate();
 }
 
 // Called every frame
