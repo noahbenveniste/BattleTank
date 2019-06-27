@@ -70,6 +70,22 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 
 	// Fire the radial impulse
 	ExplosionForce->FireImpulse();
+
+	// Set the impact blast as the new root component
+	SetRootComponent(this->ImpactBlast);
+
+	// Destroy the collision mesh
+	this->CollisionMesh->DestroyComponent();
+
+	// Start the despawn timer
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
+}
+
+void AProjectile::OnTimerExpire()
+{
+	// Despawn the projectile 
+	Destroy();
 }
 
 // Called every frame
