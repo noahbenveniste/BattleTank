@@ -9,6 +9,10 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Projectile.generated.h"
 
+// Doing a forward declaration here so we can #include in the .cpp
+// Really should have done this for all of the default subobject components
+class URadialForceComponent;
+
 UCLASS()
 class BATTLETANK_API AProjectile : public AActor
 {
@@ -35,6 +39,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	UParticleSystemComponent* ImpactBlast = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = Components)
+	URadialForceComponent* ExplosionForce = nullptr;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

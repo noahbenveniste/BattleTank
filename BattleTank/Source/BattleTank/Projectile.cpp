@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Projectile.h"
+#include "Runtime/Engine/Classes/PhysicsEngine/RadialForceComponent.h"
 
 
 // Sets default values
@@ -34,6 +35,10 @@ AProjectile::AProjectile()
 	this->ImpactBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	this->ImpactBlast->bAutoActivate = false;
 
+	// Create a default subobject for an explosion impulse to move the tanks when they are hit with a projectile
+	this->ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
+	this->ExplosionForce->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 	// Adds a default sub object upon construction so that it can't be removed (similar to Tank and TankAimingComponent)
 	this->ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement Component"));
 	this->ProjectileMovementComponent->bAutoActivate = false;
@@ -62,6 +67,9 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 
 	// Then, add the impact blast effect
 	this->ImpactBlast->Activate();
+
+	// Fire the radial impulse
+	ExplosionForce->FireImpulse();
 }
 
 // Called every frame
