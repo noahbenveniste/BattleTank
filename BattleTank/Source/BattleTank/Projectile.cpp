@@ -2,6 +2,7 @@
 
 #include "Projectile.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/RadialForceComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -76,6 +77,17 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 
 	// Destroy the collision mesh
 	this->CollisionMesh->DestroyComponent();
+
+	// Important: need to destroy the collision mesh before applying damage. Occasionally the collision mesh may block
+	// damage from being applied to the tank.
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		ProjectileDamage,
+		GetActorLocation(),
+		ExplosionForce->Radius, // For consistency i.e. if we change the ExplosionForce component it'll change here
+		UDamageType::StaticClass(),
+		TArray<AActor*>() // Damage all actors
+	);
 
 	// Start the despawn timer
 	FTimerHandle Timer;

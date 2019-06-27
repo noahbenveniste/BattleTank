@@ -26,3 +26,20 @@ void ATank::BeginPlay()
 	// leaving it in just as a note for myself.
 	Super::BeginPlay();
 }
+
+float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	// Clamp DamageAmount between 0 and the Tank's health i.e. if it is greater than the Tank's health, it
+	// won't cause health to go negative.
+	int32 DamagePoints = FPlatformMath::RoundToInt(DamageAmount);
+	auto DamageToApply = FMath::Clamp(DamagePoints, 0, CurrentHealth);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s taking damage: %i"), *(GetName()), DamageToApply);
+
+	// Apply the damage
+	CurrentHealth -= DamageToApply;
+	if (CurrentHealth <= 0) { UE_LOG(LogTemp, Warning, TEXT("%s died"), *(GetName())) }
+
+	return DamageToApply;
+}
+

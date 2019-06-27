@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tank.generated.h"
 
 UCLASS()
@@ -15,4 +16,12 @@ private:
 	ATank();
 
 	virtual void BeginPlay() override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	int32 StartingHealth = 100;
+
+	UPROPERTY(VisibleAnywhere, Category = Health)
+	int32 CurrentHealth = StartingHealth;
 };

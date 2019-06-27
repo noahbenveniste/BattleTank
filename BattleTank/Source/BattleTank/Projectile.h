@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	float DestroyDelay = 10.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	float ProjectileDamage = 20.0f;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
