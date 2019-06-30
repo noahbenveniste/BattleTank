@@ -129,7 +129,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 					HitResult,
 					StartLocation,
 					EndLocation,
-					ECollisionChannel::ECC_Visibility)) // i.e. checks if ray cast intersects with any visible object
+					ECollisionChannel::ECC_Camera)) // Ensures that we don't hit UI objects e.g. health bars
 	{
 		OutHitLocation = HitResult.Location;
 		return true;
