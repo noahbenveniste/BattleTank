@@ -62,7 +62,8 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 
 void ATankPlayerController::OnTankDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s died"), *GetName());
+	// When the player tank dies, go to spectator mode
+	StartSpectatingOnly();
 }
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector & OutHitLocation) const

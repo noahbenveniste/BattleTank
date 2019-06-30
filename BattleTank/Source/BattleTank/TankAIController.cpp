@@ -43,7 +43,7 @@ void ATankAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime); // Call superclass's Tick function first
 	
 	// Pointer protection for this tank and the player tank
-	if (!ensure(GetPlayerTank() && GetPawn())) { return; }
+	if (!(GetPlayerTank() && GetPawn())) { return; }
 	
 	// Move towards player
 	MoveToActor(GetPlayerTank(), AcceptanceRadius);
@@ -77,7 +77,8 @@ void ATankAIController::SetPawn(APawn * InPawn)
 
 void ATankAIController::OnTankDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s died"), *GetName());
+	if (!GetPawn()) { return; }
+	GetPawn()->DetachFromControllerPendingDestroy();
 }
 
 void ATankAIController::AimTowardsPlayer()

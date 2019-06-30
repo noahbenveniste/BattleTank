@@ -25,6 +25,11 @@ void ATank::BeginPlay()
 	// overridden it. If we didn't override then we could just not include this. I'm 
 	// leaving it in just as a note for myself.
 	Super::BeginPlay();
+
+	// Need to do this init here. Because the cpp constructor runs before the bp constructor, any value for starting
+	// health that we put in the blueprint as an override value would be overwritten if this was done in the header.
+	// Doing this in begin play will allow us to actually override this value in the blueprint.
+	CurrentHealth = StartingHealth;
 }
 
 float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
