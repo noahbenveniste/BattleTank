@@ -29,6 +29,11 @@ private:
 	virtual void BeginPlay() override;
 	
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnTankDeath();
 	
 	void AimTowardsPlayer();
 	// Get the tank that the player controller is possessing; used for aiming and things like that

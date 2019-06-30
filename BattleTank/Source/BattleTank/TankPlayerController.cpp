@@ -2,6 +2,7 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
+#include "Tank.h" // So we can implement OnDeath
 #include "BattleTank.h"
 
 
@@ -44,6 +45,24 @@ void ATankPlayerController::AimTowardsCrosshair()
 	}
 
 	// If what the crosshair is aiming at isn't a visible object or is out of range, don't elevate the tank barrel
+}
+
+void ATankPlayerController::SetPawn(APawn * InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn)
+	{
+		auto PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) { return; }
+
+		// Subscribe our local method to the tank's death event
+		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnTankDeath);
+	}
+}
+
+void ATankPlayerController::OnTankDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s died"), *GetName());
 }
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector & OutHitLocation) const

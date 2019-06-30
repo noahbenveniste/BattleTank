@@ -32,6 +32,12 @@ public:
 	void AimTowardsCrosshair();
 
 private:
+
+	virtual void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnTankDeath();
+
 	/**
 	 * Function that linetraces perpendicular to where the crosshair
 	 * is on the screen and checks to see if the linetrace intersects
