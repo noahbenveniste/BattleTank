@@ -30,6 +30,9 @@ int UTankAimingComponent::GetAmmoCount()
 
 void UTankAimingComponent::BeginPlay()
 {
+	// Always call the super method
+	Super::BeginPlay();
+
 	// Init LastFiredTime to make Tanks not be able to fire as soon as they spawn
 	LastFiredTime = FPlatformTime::Seconds();
 }

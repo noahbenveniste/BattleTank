@@ -13,7 +13,7 @@ void ATankAIController::BeginPlay()
 
 	// Some code to test that we are correctly possessing a tank
 	auto ControlledTank = GetPawn();
-	if (!ensure(ControlledTank)) // If the thing this points to is null, a tank isn't being possessed
+	if (!ControlledTank) // If the thing this points to is null, a tank isn't being possessed
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TankAIController not possessing a tank"));
 	}
@@ -68,7 +68,7 @@ void ATankAIController::SetPawn(APawn * InPawn)
 	if (InPawn)
 	{
 		auto PossessedTank = Cast<ATank>(InPawn);
-		if (!ensure(PossessedTank)) { return; }
+		if (!PossessedTank) { return; }
 
 		// Subscribe our local method to the tank's death event
 		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankAIController::OnTankDeath);
