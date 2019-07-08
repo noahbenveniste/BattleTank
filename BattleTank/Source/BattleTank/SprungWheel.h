@@ -28,10 +28,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	UPhysicsConstraintComponent* Spring = nullptr;
 
-	// Top mesh, i.e. the mass. Should be the root of the scene
-	UPROPERTY(VisibleAnywhere, Category = Components)
-	UStaticMeshComponent* Mass = nullptr;
-
 	// Bottom mesh, i.e. the wheel
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	UStaticMeshComponent* Wheel = nullptr;
@@ -40,6 +36,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+private:
+	void SetupConstraint();
 	
 };

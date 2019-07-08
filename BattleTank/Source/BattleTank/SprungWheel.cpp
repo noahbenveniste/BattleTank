@@ -14,14 +14,11 @@ ASprungWheel::ASprungWheel()
 	this->Spring = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("Spring"));
 	SetRootComponent(this->Spring);
 
-	// Create the mass component
-	this->Mass = CreateDefaultSubobject<UStaticMeshComponent>(FName("Mass"));
-
 	// Create the wheel component
 	this->Wheel = CreateDefaultSubobject<UStaticMeshComponent>(FName("Wheel"));
 
 	// Attach the mass and wheel to the spring
-	this->Mass->SetupAttachment(this->Spring); // Better than using AttachToComponent for setup, can only be used in constructors
+    // Better than using AttachToComponent for setup, can only be used in constructors
 	this->Wheel->SetupAttachment(this->Spring);
 }
 
@@ -30,14 +27,22 @@ void ASprungWheel::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (GetAttachParentActor())
-	{ 
-		UE_LOG(LogTemp, Warning, TEXT("Not null"))
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Null"))
-	}
+	SetupConstraint();
+}
+
+void ASprungWheel::SetupConstraint()
+{
+	// Pointer protection
+	if (!GetAttachParentActor()) { return; }
+
+	// Attach the spring physics constraint to the tank
+	UPrimitiveComponent* BodyRoot = Cast<UPrimitiveComponent>(GetAttachParentActor()->GetRootComponent());
+
+	// More pointer protection
+	if (!BodyRoot) { return; }
+
+	// Set the constraint
+	this->Spring->SetConstrainedComponents(BodyRoot, NAME_None, Cast<UPrimitiveComponent>(Wheel), NAME_None);
 }
 
 // Called every frame
