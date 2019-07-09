@@ -63,7 +63,7 @@ void UTankTrack::SetThrottle(float Throttle)
 	//	     can only input W, A, S or D one at a time. However the driving does
 	//       feel a bit smoother. May need to play around with this.
 
-	// float CurrentThrottle = FMath::Clamp<float>(Throttle, -1, 1);
+	//float CurrentThrottle = FMath::Clamp<float>(Throttle, -1, 1);
 	float CurrentThrottle = Throttle;
 
 	// Drive the track
