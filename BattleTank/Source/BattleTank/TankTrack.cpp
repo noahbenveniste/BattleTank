@@ -2,24 +2,52 @@
 
 #include "TankTrack.h"
 #include "Engine/World.h"
+#include "SprungWheel.h"
+#include "Components/SceneComponent.h"
+#include "SpawnPoint.h"
 
 UTankTrack::UTankTrack()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// We need this to be turned on so the OnHit event works
-	SetNotifyRigidBodyCollision(true);
 }
 
 void UTankTrack::BeginPlay()
 {
 	// Always call the super method
 	Super::BeginPlay();
+}
 
-	// Need to register the delegate for OnHit
-	OnComponentHit.AddDynamic(this, &UTankTrack::OnHit);
+TArray<ASprungWheel*> UTankTrack::GetWheels() const
+{
+	// Get the components attached to the tracks. These will be spawn points that spawn the wheels
+	TArray<USceneComponent*> ChildComps;
+	GetChildrenComponents(true, ChildComps);
+
+	// Init return array
+	TArray<ASprungWheel*> Wheels;
+
+	// Iterate over the spawn points we found, get the actor that each spawned
+	for (USceneComponent* Child : ChildComps)
+	{
+		// Cast the child to a SpawnPoint
+		USpawnPoint* Spawner = Cast<USpawnPoint>(Child);
+		if (!Spawner) { continue; }
+
+		// Get the spawned actor from the spawner
+		AActor* SpawnedActor = Spawner->GetSpawnedActor();
+
+		// Cast the spawned actor to SprungWheel
+		ASprungWheel* Wheel = Cast<ASprungWheel>(SpawnedActor);
+		if (!Wheel) { continue; }
+
+		// Add it to the return array
+		Wheels.Add(Wheel);
+	}
+	
+	// Temp for compilation
+	return Wheels;
 }
 
 void UTankTrack::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
@@ -29,79 +57,36 @@ void UTankTrack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-/**
- * Executes whenever the Tank is touching the ground
- */
-void UTankTrack::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
-{
-	// Drive the track
-	DriveTrack();
-
-	// Apply correcting force to avoid side-to-side motion
-	ApplyCorrectingForce();
-
-	// Reset throttle
-	CurrentThrottle = 0;
-}
-
-void UTankTrack::ApplyCorrectingForce()
-{
-	// Calculate current slippage speed i.e. check to see if there is any velocity component
-	// to the right or left (can just check right, left will be negative).
-	// Use two known vectors: the component's velocity and right vector.
-	// If these vectors are perpendicular i.e. the forward vector has no sideways components,
-	// the cos(90) is 0, so no slippage. If the tank was moving entirely sideways then
-	// the angle would be 0, cos(0) = 1, so slippage speed would just be the speed of the
-	// tank.
-	auto SlippageSpeed = FVector::DotProduct(GetRightVector(), GetComponentVelocity());
-
-	// Get the time delta
-	auto DeltaTime = GetWorld()->GetDeltaSeconds();
-
-	// Determine required acceleration this frame to correct for that slippage. Multiply
-	// by the negative of the right unit vector to get the direction the acceleration should
-	// be applied in.
-	auto CorrectingAcceleration = -SlippageSpeed / DeltaTime * GetRightVector();
-
-	// Apply sideways force using F = m * a. Need to get the Tank's mass first though.
-	// GetOwner gets the Tank_BP. GetRootComponent gets the root Tank scene component.
-	// Need to cast to a static mesh component to get the mass.
-	auto TankRoot = Cast<UStaticMeshComponent>(GetOwner()->GetRootComponent());
-
-	// Divide by 2 because there are two tracks
-	auto CorrectingForce = (TankRoot->GetMass() * CorrectingAcceleration) / 2;
-
-	// Add the correcting force to the TankRoot directly
-	TankRoot->AddForce(CorrectingForce);
-}
-
 void UTankTrack::SetThrottle(float Throttle)
 {
 	// Note: clamping the throttle values prevents user from combining WASD input,
 	//	     can only input W, A, S or D one at a time. However the driving does
 	//       feel a bit smoother. May need to play around with this.
 
-	// CurrentThrottle = FMath::Clamp<float>(CurrentThrottle + Throttle, -1, 1);
-	CurrentThrottle = CurrentThrottle + Throttle;
+	// float CurrentThrottle = FMath::Clamp<float>(Throttle, -1, 1);
+	float CurrentThrottle = Throttle;
+
+	// Drive the track
+	DriveTrack(CurrentThrottle);
 }
 
-void UTankTrack::DriveTrack()
+void UTankTrack::DriveTrack(float CurrentThrottle)
 {
-	// Get the forward vector for the track (direction), the maximum magnitude of
-	// the force (TrackMaxDrivingForce) and a percentage of that magnitude based on
-	// the player's button input (Throttle)
-	auto ForceApplied = this->GetForwardVector() * CurrentThrottle * TrackMaxDrivingForce;
+	// Get the the maximum magnitude of force (TrackMaxDrivingForce) and a percentage of 
+	// that magnitude based on the player's button input (Throttle)
+	auto ForceApplied = CurrentThrottle * TrackMaxDrivingForce;
 
-	// The location to apply the force: the origin of the tank track static mesh
-	auto ForceLocation = this->GetComponentLocation();
+	// Get our wheels
+	auto Wheels = GetWheels();
 
-	// Need to get the root object for what the tread is a part of, i.e. the tank root,
-	// then cast this down to  UPrimitiveComponent so we can use the AddForceAtLocation
-	// function.
-	auto TankRoot = Cast<UPrimitiveComponent>(this->GetOwner()->GetRootComponent());
+	// Divide up the applied force per wheel
+	auto ForcePerWheel = ForceApplied / Wheels.Num();
 
-	// Apply the force
-	TankRoot->AddForceAtLocation(ForceApplied, ForceLocation);
+	// Apply the force per wheel on each force
+	for (ASprungWheel* Wheel : Wheels)
+	{
+		Wheel->AddDriveForce(ForcePerWheel);
+	}
 }
 
 void UTankTrack::OnRegister()

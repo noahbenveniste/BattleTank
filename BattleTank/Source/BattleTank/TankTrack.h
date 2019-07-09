@@ -6,6 +6,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "TankTrack.generated.h"
 
+/* Forward declaration of ASprungWheel */
+class ASprungWheel;
+
 /**
  * TankTrack is used to set maximum driving force and to apply forces to the tank.
  */
@@ -21,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void SetThrottle(float Throttle);
 
-	void DriveTrack();
+	void DriveTrack(float CurrentThrottle);
 	
 	// Max force per track in newtons
 	// A tank is roughly 45000 kilos, the Abrams can go 0-20 mph
@@ -40,10 +43,5 @@ private:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
-
-	void ApplyCorrectingForce();
-
-	float CurrentThrottle = 0;
+	TArray<ASprungWheel*> GetWheels() const;
 };

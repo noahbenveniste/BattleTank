@@ -32,6 +32,9 @@ void USpawnPoint::BeginPlay()
 
 	// Finish spawning
 	UGameplayStatics::FinishSpawningActor(NewActor, GetComponentTransform());
+
+	// Store the actor that we just spawned in the member variable
+	this->SpawnedActor = NewActor;
 }
 
 
@@ -41,5 +44,10 @@ void USpawnPoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+AActor * USpawnPoint::GetSpawnedActor() const
+{
+	return this->SpawnedActor;
 }
 
