@@ -3,12 +3,16 @@
 #include "SprungWheel.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/World.h"
 
 // Sets default values
 ASprungWheel::ASprungWheel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Set the tick group to be post-physics so tick runs after on hit, allowing us to reset the force mag in tick
+	PrimaryActorTick.TickGroup = TG_PostPhysics;
 
 	// Create the spring component i.e. the physics constraint, make it the scene root
 	this->Spring = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("Spring"));
@@ -39,6 +43,13 @@ void ASprungWheel::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Need this for the wheel to generate on hit events
+	this->Wheel->SetNotifyRigidBodyCollision(true);
+
+	// Register the wheel as a dynamic delegate for on hit events. The SprungWheel
+	// itself as an actor, so it cannot be a delegate.
+	this->Wheel->OnComponentHit.AddDynamic(this, &ASprungWheel::OnHit);
+
 	SetupConstraint();
 }
 
@@ -65,10 +76,31 @@ void ASprungWheel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Sanity check to ensure that we're in the correct physics group
+	if (GetWorld()->TickGroup == TG_PostPhysics)
+	{
+		// Reset the force magnitude for the next frame
+		this->TotalForceMagnitudeThisFrame = 0;
+	}
 }
 
 void ASprungWheel::AddDriveForce(float ForceMagnitude)
 {
-	this->Wheel->AddForce(this->Axle->GetForwardVector() * ForceMagnitude);
+	// Update the force magnitude. Note that the += operator is significant
+	// because we call this function multiple times in a row in the movement
+	// component, need to add those results up.
+	this->TotalForceMagnitudeThisFrame += ForceMagnitude;
 }
 
+void ASprungWheel::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Wheel force applied"));
+
+	// Only apply forces when the wheels are touching ground
+	ApplyForce();
+}
+
+void ASprungWheel::ApplyForce()
+{
+	this->Wheel->AddForce(this->Axle->GetForwardVector() * this->TotalForceMagnitudeThisFrame);
+}

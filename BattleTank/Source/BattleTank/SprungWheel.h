@@ -50,5 +50,11 @@ protected:
 
 private:
 	void SetupConstraint();
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 	
+	void ApplyForce();
+
+	float TotalForceMagnitudeThisFrame = 0;
 };
