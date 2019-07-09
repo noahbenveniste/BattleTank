@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "SprungWheel.generated.h"
 
-/**
- * Forward declaration of UPhysicsConstraintComponent
- */
+/* Forward declaration of UPhysicsConstraintComponent */
 class UPhysicsConstraintComponent;
+
+/* Forward declaration of USphereComponent */
+class USphereComponent;
 
 UCLASS()
 class BATTLETANK_API ASprungWheel : public AActor
@@ -24,13 +25,23 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Physics constraint
+	// Spring constraint
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	UPhysicsConstraintComponent* Spring = nullptr;
 
-	// Bottom mesh, i.e. the wheel
+	// Axle. Needs to be USphereComponent because we need
+	// a mesh to simulate physics, but the sphere component
+	// doesn't actually collide with anything
 	UPROPERTY(VisibleAnywhere, Category = Components)
-	UStaticMeshComponent* Wheel = nullptr;
+	USphereComponent* Axle = nullptr;
+
+	// Wheel
+	UPROPERTY(VisibleAnywhere, Category = Components)
+	USphereComponent* Wheel = nullptr;
+
+	// Wheel-axle constraint
+	UPROPERTY(VisibleAnywhere, Category = Components)
+	UPhysicsConstraintComponent* WheelAxleConstraint = nullptr;
 
 public:	
 	// Called every frame

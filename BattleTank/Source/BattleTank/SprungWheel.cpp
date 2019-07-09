@@ -2,7 +2,7 @@
 
 #include "SprungWheel.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
-
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ASprungWheel::ASprungWheel()
@@ -14,12 +14,24 @@ ASprungWheel::ASprungWheel()
 	this->Spring = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("Spring"));
 	SetRootComponent(this->Spring);
 
-	// Create the wheel component
-	this->Wheel = CreateDefaultSubobject<UStaticMeshComponent>(FName("Wheel"));
+	// Create the axle component
+	this->Axle = CreateDefaultSubobject<USphereComponent>(FName("Axle"));
 
-	// Attach the mass and wheel to the spring
-    // Better than using AttachToComponent for setup, can only be used in constructors
-	this->Wheel->SetupAttachment(this->Spring);
+	// Attach the axle to the spring
+	// Better than using AttachToComponent for setup, can only be used in constructors
+	this->Axle->SetupAttachment(this->Spring);
+
+	// Create the wheel component
+	this->Wheel = CreateDefaultSubobject<USphereComponent>(FName("Wheel"));
+
+	// Attach the wheel to the axle
+	this->Wheel->SetupAttachment(this->Axle);
+
+	// Create the wheel/axle physics constraint
+	this->WheelAxleConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("WheelAxleConstraint"));
+
+	// Attach the wheel/axle constraint and the axle
+	this->WheelAxleConstraint->SetupAttachment(this->Axle);
 }
 
 // Called when the game starts or when spawned
@@ -41,8 +53,11 @@ void ASprungWheel::SetupConstraint()
 	// More pointer protection
 	if (!BodyRoot) { return; }
 
-	// Set the constraint
-	this->Spring->SetConstrainedComponents(BodyRoot, NAME_None, Cast<UPrimitiveComponent>(Wheel), NAME_None);
+	// Set up spring constraint
+	this->Spring->SetConstrainedComponents(BodyRoot, NAME_None, Cast<UPrimitiveComponent>(this->Wheel), NAME_None);
+
+	// Set up axle constraint
+	this->WheelAxleConstraint->SetConstrainedComponents(Cast<UPrimitiveComponent>(this->Axle), NAME_None, Cast<UPrimitiveComponent>(this->Wheel), NAME_None);
 }
 
 // Called every frame
